@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Booking – Guest House</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="gate">
+    <header id="site-header" class="site-header"></header>
+    <main>
+      <section class="hero" style="--img: url(images/hero.jpg)">
+        <div class="container hero-in">
+          <span class="tag">Booking</span>
+          <h1>Request your stay.</h1>
+          <p>
+            Signed in as <b id="booking-user">…</b>. Tell us the details and
+            we’ll get back to you about availability.
+          </p>
+        </div>
+      </section>
+
+      <section class="section tint">
+        <div class="container contact-grid">
+          <div class="card form-card" id="enquiry">
+            <h2>Booking request</h2>
+            <p>
+              Fields marked * are required. A booking request does not
+              confirm a reservation.
+            </p>
+            <form class="enq" id="enquiry-form" novalidate>
+              <div class="f2">
+                <label
+                  >Your name *<input
+                    name="name"
+                    placeholder="Full name"
+                    autocomplete="name" /><span
+                    class="err"
+                    data-err="name"
+                  ></span
+                ></label>
+                <label
+                  >Email address *<input
+                    name="email"
+                    type="email"
+                    placeholder="Your email address"
+                    autocomplete="email" /><span
+                    class="err"
+                    data-err="email"
+                  ></span
+                ></label>
+              </div>
+              <label
+                >Phone number (optional)<input
+                  name="phone"
+                  type="tel"
+                  placeholder="Include your country code"
+                  autocomplete="tel"
+              /></label>
+              <div class="f2">
+                <label>Arrival date<input name="arrival" type="date" /></label
+                ><label
+                  >Departure date<input name="departure" type="date" /><span
+                    class="err"
+                    data-err="departure"
+                  ></span
+                ></label>
+              </div>
+              <div class="f2">
+                <label
+                  >Number of guests<input
+                    name="guests"
+                    placeholder="Adults and children"
+                /></label>
+                <label
+                  >Preferred room<select name="room">
+                    <option value="">Select a category</option>
+                    <option>Classic Suite</option>
+                    <option>Garden View</option>
+                    <option>Family Room</option>
+                    <option>Help me choose</option>
+                  </select></label
+                >
+              </div>
+              <label
+                >Your message *<textarea
+                  name="message"
+                  placeholder="Tell us about your stay, questions or any access needs…"
+                ></textarea
+                ><span class="err" data-err="message"></span
+              ></label>
+              <label class="consent"
+                ><input type="checkbox" name="consent" /> I agree to be
+                contacted about this enquiry. *</label
+              ><span class="err" data-err="consent"></span>
+              <div class="btns" style="align-items: center">
+                <button class="btn" type="submit">Send booking request</button
+                ><span style="font-size: 0.78rem; opacity: 0.8"
+                  >Preview – delivery to be configured</span
+                >
+              </div>
+              <div class="status" id="form-status" role="status"></div>
+            </form>
+          </div>
+
+          <aside class="stack">
+            <div class="card">
+              <h3>Your account</h3>
+              <p style="margin-top: 6px">
+                Logged in as <b id="side-user">…</b>
+              </p>
+              <div class="btns" style="margin-top: 12px">
+                <button class="btn ghost" id="logout-btn" type="button">
+                  Log out
+                </button>
+              </div>
+            </div>
+            <div class="card">
+              <h3>A few helpful details</h3>
+              <p style="margin-top: 8px">
+                For room enquiries, include your dates and group size. If
+                your dates are flexible, let us know.
+              </p>
+              <p style="margin-top: 8px">
+                Ask about rates, room suitability and arrival arrangements.
+                Availability and booking terms need to be confirmed before
+                your stay.
+              </p>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+    <footer id="site-footer" class="site-footer"></footer>
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Login – Guest House</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header id="site-header" class="site-header"></header>
+    <main>
+      <section class="auth-wrap">
+        <div class="container auth-grid">
+          <div class="auth-art" style="--img: url(images/hero.jpg)">
+            <div class="auth-art-in">
+              <span class="tag">Guest House</span>
+              <h2>Sign in to book your stay</h2>
+              <p>
+                We use a quick one-time passcode sent to your email —
+                no passwords to remember.
+              </p>
+            </div>
+          </div>
+
+          <div class="card auth-card">
+            <div class="auth-step" id="step-email">
+              <h1>Welcome back</h1>
+              <p class="muted">
+                Enter your email to receive a 6-digit login code.
+              </p>
+              <form id="email-form" novalidate>
+                <label
+                  >Email address
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="you@example.com"
+                    autocomplete="email"
+                    required
+                  />
+                  <span class="err" data-err="email"></span>
+                </label>
+                <button class="btn" type="submit">
+                  Send code <span class="spin" hidden></span>
+                </button>
+              </form>
+            </div>
+
+            <div class="auth-step" id="step-otp" hidden>
+              <h1>Enter your code</h1>
+              <p class="muted">
+                We sent a 6-digit code to <b id="otp-email"></b>.
+              </p>
+              <div class="demo-banner" id="demo-otp"></div>
+              <form id="otp-form" novalidate>
+                <label
+                  >One-time code
+                  <input
+                    inputmode="numeric"
+                    maxlength="6"
+                    name="otp"
+                    placeholder="••••••"
+                    autocomplete="one-time-code"
+                    required
+                  />
+                  <span class="err" data-err="otp"></span>
+                </label>
+                <button class="btn" type="submit">Verify &amp; continue</button>
+                <button class="btn ghost" type="button" id="resend-otp">
+                  Resend code
+                </button>
+              </form>
+              <button class="link-btn" id="change-email" type="button">
+                ← Use a different email
+              </button>
+            </div>
+
+            <div class="status" id="auth-status" role="status"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer id="site-footer" class="site-footer"></footer>
+    <script src="script.js"></script>
+  </body>
+</html>
