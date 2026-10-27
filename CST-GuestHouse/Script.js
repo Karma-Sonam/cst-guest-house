@@ -176,7 +176,7 @@
   }
   const footer = document.getElementById("site-footer");
   if (footer) {
-    footer.innerHTML = `<div class="container"><div class="foot"><div><div class="foot-brand"><img src="images/logo.png" alt="Guest House logo" /><b>Guest House</b></div><p style="font-size:.88rem;margin-top:6px;max-width:300px">A refined guest house experience with thoughtful stays, welcoming spaces, and the comfort of a home away.</p></div>
+    footer.innerHTML = `<div class="container"><div class="foot"><div><div class="foot-brand"><img src="Images/logo.jpg" alt="Guest House logo" /><b>Guest House</b></div><p style="font-size:.88rem;margin-top:6px;max-width:300px">A refined guest house experience with thoughtful stays, welcoming spaces, and the comfort of a home away.</p></div>
 <div><b>Quick links</b><ul>${pages.map(([h, t]) => `<li><a href="${h}">${t}</a></li>`).join("")}</ul></div>
 <div><b>Contact</b><ul><li><a href="contact.html">Email</a></li><li><a href="contact.html">Phone</a></li><li><a href="contact.html">Address</a></li></ul></div></div>
 <div class="copy"><span>© ${new Date().getFullYear()} Guest House. All rights reserved.</span><span><a href="#" aria-label="Instagram">Instagram</a> · <a href="#" aria-label="Facebook">Facebook</a> · <a href="#" aria-label="Twitter">Twitter</a></span></div></div>`;
