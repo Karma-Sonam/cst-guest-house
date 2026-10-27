@@ -223,8 +223,8 @@ For more details about the application workflow and CI/CD process, visit the [CS
 
 ## Contributors
 
-1. Sherab Dorji (Leader)
-2. Kinley Phuntsho 
+1. Sherab Dorji
+2. Kinley Phuntsho(Leader) 
 3. Chimi Gyeltshen
 4. Karma Sonam
 5. Pasang Gyeltshen
