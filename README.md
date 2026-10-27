@@ -223,12 +223,13 @@ For more details about the application workflow and CI/CD process, visit the [CS
 
 ## Contributors
 
-1. Kinley Phuntsho
-2. Chimi Gyeltshen
-3. Karma Sonam
-4. Pasang Gyeltshen
-5. Sonam Choejur
-6. Sherab Dorji
+1. Sherab Dorji
+2. Kinley Phuntsho
+3. Chimi Gyeltshen
+4. Karma Sonam
+5. Pasang Gyeltshen
+6. Sonam Choejur
+
 
 ## License
 
