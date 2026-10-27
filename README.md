@@ -223,7 +223,12 @@ For more details about the application workflow and CI/CD process, visit the [CS
 
 ## Contributors
 
-Add the names of the students and developers contributing to this project.
+1. Kinley Phuntsho
+2. Chimi Gyeltshen
+3. Karma Sonam
+4. Pasang Gyeltshen
+5. Sonam Choejur
+6. Sherab Dorji
 
 ## License
 
