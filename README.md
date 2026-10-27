@@ -226,9 +226,9 @@ For more details about the application workflow and CI/CD process, visit the [CS
 1. Sherab Dorji
 2. Kinley Phuntsho(Leader) 
 3. Chimi Gyeltshen
-4. Karma Sonam
+4. Karma Sonam ( )
 5. Pasang Gyeltshen
-6. Sonam Choejur
+6. Sonam Choejur (Frontend/ Backend/ DB)
 
 
 ## License
