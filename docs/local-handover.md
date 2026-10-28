@@ -9,7 +9,7 @@ The administrator email/password are in the ignored local `.env` file under ADMI
 ## Suggested demonstration
 
 1. Show the public home, rooms and facilities pages. Campus photos are references, not verified room interiors.
-2. Register a synthetic guest with an `example.test` email and sign in. Check availability for the current property date through tomorrow, with three guests. Submit a standard-room request; an extra bed is required. Record the reference.
+2. Register a synthetic guest with an `example.test` email and sign in. Check availability for the current property date through tomorrow, with three guests. Submit a standard-room request; an extra bed is required, and the selected/automatically allocated room is immediately held for the requested dates. Record the reference.
 3. Use a separate browser tab/session to sign in as administrator. Find the reference under Booking requests, select a suitable available standard room, approve the extra bed and the request, then mark the bed as added. Check-in is permitted only during the reserved dates.
 4. Show Current guests and the booking timeline. Check out and show the completed status and room release. Do not use a real guest record for a demonstration.
 5. Show an independent convention or dining request and its administrator review. Approval is subject to overlap checks; facility approval is independent of accommodation approval.
@@ -23,8 +23,8 @@ The sequence above is a repeatable handover checklist, not a claim that each ste
 
 | Area | Evidence |
 | --- | --- |
-| Backend | Latest backend change passed 23 tests: 13 unit and 10 real PostgreSQL integration tests. All five migrations were applied. No backend code changed during this usability pass. |
-| Frontend | 14 tests cover booking/auth workflows, account changes, reports, room editing, explicit labels/help text, nested password controls and Escape focus return. Production build passes. |
+| Backend | Latest pending-hold change passed 25 tests: 13 unit and 12 real PostgreSQL integration tests. All seven migrations were applied. |
+| Frontend | 16 tests cover booking/auth workflows, account changes, reports, room editing, explicit labels/help text, nested password controls, Escape focus return and automatic resource updates. Production build passes. |
 | Responsive browser checks | Registration and generated reports fit 320, 390 and 768 pixel viewport overrides without document-level horizontal overflow. The 390 pixel admin dashboard fits after fixing table-label overflow. Both mobile menus close with Escape and restore trigger focus. |
 | Browser scope | Checks used the in-app browser on this computer. This is not an independent Firefox/Safari/device test or a formal accessibility certification. |
 | Containers | Both images were rebuilt after the room/admin/accessibility changes. All three services became healthy; migration V5, management API proxy checks, closed-registration default, direct SPA route refresh and CSP passed. The trial stack was stopped with its volume retained. The development preview remains available. Rebuild again after future source changes. |

@@ -11,9 +11,9 @@ public interface BookingRepository extends JpaRepository<Booking,UUID>, JpaSpeci
     Page<Booking> findByStatusOrderByCreatedAtDesc(String status,Pageable page);
     @Lock(LockModeType.PESSIMISTIC_WRITE) @Query("select b from Booking b where b.id=:id")
     Optional<Booking> lockById(UUID id);
-    @Query("select count(b) from Booking b where b.assignedRoomId=:room and b.status in ('APPROVED','CHECKED_IN') and b.checkIn < :departure and b.checkOut > :arrival and b.id <> :excluded")
+    @Query("select count(b) from Booking b where b.assignedRoomId=:room and b.status in ('PENDING','APPROVED','CHECKED_IN') and b.checkIn < :departure and b.checkOut > :arrival and b.id <> :excluded")
     long overlaps(UUID room,LocalDate arrival,LocalDate departure,UUID excluded);
-    @Query("select count(b) from Booking b where b.assignedRoomId=:room and b.status in ('APPROVED','CHECKED_IN')")
+    @Query("select count(b) from Booking b where b.assignedRoomId=:room and b.status in ('PENDING','APPROVED','CHECKED_IN')")
     long activeForRoom(UUID room);
     boolean existsByAssignedRoomIdAndStatusAndIdNot(UUID room,String status,UUID id);
     long countByStatus(String status);

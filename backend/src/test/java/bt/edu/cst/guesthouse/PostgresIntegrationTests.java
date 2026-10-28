@@ -75,6 +75,38 @@ class PostgresIntegrationTests {
         var result=call("POST","/bookings",booking(guests,bed,arrival),user); assertEquals(201,result.status,result.body.toString()); return result.body.path("id").asText();
     }
     private Result approve(String id,boolean bed) throws Exception { return call("PATCH","/admin/bookings/"+id+"/approve",Map.of("roomId",ROOM,"approveExtraBed",bed,"remark","Test allocation"),admin); }
+    @Test void pendingRoomHoldsBlockOverlapAndReleaseOnRejectionOrCancellation() throws Exception {
+        LocalDate arrival=today;
+        var request=new HashMap<String,Object>(booking(2,false,arrival)); request.put("roomId",ROOM);
+        var first=call("POST","/bookings",request,user);
+        assertEquals(201,first.status,first.body.toString()); assertEquals(ROOM,first.body.path("assignedRoomId").asText());
+        assertEquals("PENDING",first.body.path("status").asText());
+        String id=first.body.path("id").asText();
+        assertEquals(409,call("POST","/bookings",request,user).status);
+        var available=call("GET","/rooms/available?checkIn="+arrival+"&checkOut="+arrival.plusDays(1)+"&guests=2",null,user);
+        assertFalse(available.body.toString().contains(ROOM));
+        assertEquals(7,call("GET","/admin/dashboard/summary",null,admin).body.path("availableRooms").asInt());
+        var adjacent=new HashMap<String,Object>(booking(2,false,arrival.plusDays(1))); adjacent.put("roomId",ROOM);
+        assertEquals(201,call("POST","/bookings",adjacent,user).status);
+        assertEquals(200,call("PATCH","/admin/bookings/"+id+"/reject",Map.of("remark","Test release"),admin).status);
+        assertEquals(8,call("GET","/admin/dashboard/summary",null,admin).body.path("availableRooms").asInt());
+        var replacement=call("POST","/bookings",request,user); assertEquals(201,replacement.status,replacement.body.toString());
+        assertEquals(200,call("PATCH","/bookings/"+replacement.body.path("id").asText()+"/cancel",null,user).status);
+        var after=call("POST","/bookings",request,user); assertEquals(201,after.status);
+        assertEquals(200,approve(after.body.path("id").asText(),false).status);
+        assertEquals(409,call("POST","/bookings",request,user).status);
+    }
+    @Test void simultaneousRequestsCannotHoldTheSameRoom() throws Exception {
+        var request=new HashMap<String,Object>(booking(2,false,today.plusDays(75))); request.put("roomId",ROOM);
+        try (var executor=Executors.newFixedThreadPool(2)) {
+            var first=executor.submit(() -> call("POST","/bookings",request,user));
+            var second=executor.submit(() -> call("POST","/bookings",request,user));
+            var codes=new ArrayList<>(List.of(first.get(30,TimeUnit.SECONDS).status,second.get(30,TimeUnit.SECONDS).status));
+            Collections.sort(codes); assertEquals(List.of(201,409),codes);
+        }
+        var reference=call("GET","/public/config",null,null);
+        assertEquals(8,reference.body.path("standardRooms").asInt()); assertEquals(2,reference.body.path("specialRooms").asInt());
+    }
     @Test void roomDetailsAreValidatedAuditedAndProtectedByActiveAllocations() throws Exception {
         var details=Map.of("roomNumber","A-101","beds",2,"location","Test wing","description","Test-only room description","amenities","Test desk");
         assertEquals(403,call("PUT","/admin/rooms/"+ROOM,details,user).status);

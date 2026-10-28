@@ -232,7 +232,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"fullName\": \"Postman Test Visitor\",\n  \"email\": \"{{guestEmail}}\",\n  \"guestCategory\": \"GENERAL_GUEST\",\n  \"purpose\": \"Local Postman demonstration\",\n  \"guests\": 3,\n  \"checkIn\": \"{{checkIn}}\",\n  \"checkOut\": \"{{checkOut}}\",\n  \"preferredCategory\": \"STANDARD\",\n  \"extraBedRequested\": true,\n  \"remark\": \"Synthetic API test data\"\n}",
+              "raw": "{\r\n  \"fullName\": \"Postman Test Visitor\",\r\n  \"email\": \"{{guestEmail}}\",\r\n  \"guestCategory\": \"GENERAL_GUEST\",\r\n  \"purpose\": \"Local Postman demonstration\",\r\n  \"guests\": 3,\r\n  \"checkIn\": \"{{checkIn}}\",\r\n  \"checkOut\": \"{{checkOut}}\",\r\n  \"preferredCategory\": \"STANDARD\",\r\n  \"extraBedRequested\": true,\r\n  \"remark\": \"Synthetic API test data\",\r\n  \"roomId\": \"{{roomId}}\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"

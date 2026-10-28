@@ -9,11 +9,11 @@ Set-Location D:\GuestHouse\backend
 .\run-integration-tests.ps1
 ```
 
-The script creates/reuses `guesthouse_test`, passes its connection settings only to the test process, and runs thirteen unit tests plus ten full HTTP/PostgreSQL tests. The integration class refuses database names not ending in `_test` before Spring opens the datasource. Its fixtures clear only that disposable database; never point TEST_DATABASE_URL at a working database.
+The script creates/reuses `guesthouse_test`, passes its connection settings only to the test process, and runs thirteen unit tests plus twelve full HTTP/PostgreSQL tests. The integration class refuses database names not ending in `_test` before Spring opens the datasource. Its fixtures clear only that disposable database; never point TEST_DATABASE_URL at a working database.
 
-Coverage includes role/ownership restrictions, logout revocation and CORS, three-guest/extra-bed lifecycle, concurrent approvals, PostgreSQL rejection of a direct overlapping write, hall overlap/adjacency, linked cancellation and dining conflicts. All twenty-three tests passed together against PostgreSQL with all five migrations applied. QA also fixed and tested rejection of login passwords exceeding BCrypt's 72-byte UTF-8 limit, including multi-byte Unicode input.
+Coverage includes role/ownership restrictions, logout revocation and CORS, three-guest/extra-bed lifecycle, concurrent approvals, PostgreSQL rejection of a direct overlapping write, hall overlap/adjacency, linked cancellation and dining conflicts. All twenty-five tests passed together against PostgreSQL with all seven migrations applied, including pending-room hold and release/concurrency checks. QA also fixed and tested rejection of login passwords exceeding BCrypt's 72-byte UTF-8 limit, including multi-byte Unicode input.
 
-CI provides its own disposable PostgreSQL service. Normal `mvnw test` without RUN_POSTGRES_TESTS=true skips these ten database tests and still runs unit tests. This opt-in prevents unexpected local database access.
+CI provides its own disposable PostgreSQL service. Normal `mvnw test` without RUN_POSTGRES_TESTS=true skips these twelve database tests and still runs unit tests. This opt-in prevents unexpected local database access.
 
 ## Postman
 
@@ -81,4 +81,4 @@ Back up PostgreSQL before schema-changing releases. Code rollback uses a previou
 
 ## Remaining work
 
-The user selected local-only operation for this stage. No public server, DNS, certificate or remote deployment is being configured. Public deployment later requires a separately supplied hosting target, domain and credentials. User activation and basic reports are now implemented; see admin-management.md. Administrator booking search is also implemented; see booking-search.md. Audited room-detail editing is implemented; see room-details.md. The local usability pass and demonstration guide are documented in local-handover.md. Property-confirmed content, college acceptance and broader device/assistive-technology coverage remain. Do not describe the project as deployed merely because local Docker and workflow checks pass.
+The system remains local-only as requested. No public server, domain or tunnel is being configured. Public deployment later requires a separately supplied hosting target, domain and credentials. User activation and basic reports are now implemented; see admin-management.md. Administrator booking search is also implemented; see booking-search.md. Audited room-detail editing is implemented; see room-details.md. The local usability pass and demonstration guide are documented in local-handover.md. Property-confirmed content, college acceptance and broader device/assistive-technology coverage remain. Do not describe the project as deployed merely because local Docker and workflow checks pass.

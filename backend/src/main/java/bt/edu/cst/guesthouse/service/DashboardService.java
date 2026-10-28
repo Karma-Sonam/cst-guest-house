@@ -24,6 +24,7 @@ public class DashboardService {
     public Summary summary() {
         LocalDate today=LocalDate.now(ZoneId.of("Asia/Thimphu")); var inventory=rooms.findAll(); UUID none=new UUID(0,0);
         long available=inventory.stream().filter(r -> "ACTIVE".equals(r.serviceStatus))
+            .filter(r -> r.normalCapacity!=null && r.maxCapacity!=null)
             .filter(r -> bookings.overlaps(r.id,today,today.plusDays(1),none)==0 && !bookings.existsByAssignedRoomIdAndStatusAndIdNot(r.id,"CHECKED_IN",none)).count();
         long occupied=inventory.stream().filter(r -> bookings.existsByAssignedRoomIdAndStatusAndIdNot(r.id,"CHECKED_IN",none)).count();
         return new Summary(inventory.size(),inventory.stream().filter(r -> "STANDARD".equals(r.category)).count(),inventory.stream().filter(r -> "SPECIAL".equals(r.category)).count(),

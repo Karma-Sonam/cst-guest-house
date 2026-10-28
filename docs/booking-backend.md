@@ -1,5 +1,7 @@
 # Accommodation backend
 
+Current policy update (28 October 2026): pending requests now hold a selected or automatically allocated room. See [pending holds and live data](pending-holds-and-live-data.md) for V6/V7, conflict handling and the current verification results. Earlier milestone evidence below is historical.
+
 ## Implemented scope
 
 Authenticated room catalogue and date-based standard-room search; one-room booking requests; owner-only booking detail and paginated lists; administrative review, rejection, approval with room assignment, reassignment, remarks and eligible reopening; extra-bed decisions and physical setup; check-in and checkout; room serviceability and special-room capacity configuration.

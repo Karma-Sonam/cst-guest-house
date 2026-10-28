@@ -8,6 +8,6 @@ export interface Event { previousStatus: string | null; newStatus: string; chang
 export interface BookingDetail { booking: Booking; timeline: Event[] }
 export interface FacilityRequest { id: string; facilityType: 'CONVENTION' | 'DINING'; userId: string; bookingId: string | null; title: string; purpose: string; usageDate: string; startTime: string; endTime: string; mealPeriod: string | null; participants: number; status: string; userRemark: string | null; adminRemark: string | null; schedulingConflict: boolean; createdAt: string }
 export interface FacilityDetail { request: FacilityRequest; timeline: Event[] }
-export interface Config { registrationEnabled: boolean }
+export interface Config { registrationEnabled: boolean; totalRooms?: number; standardRooms?: number; specialRooms?: number; totalFacilities?: number; contact?: { phone: string; email: string; address: string } }
 export interface Dashboard { totalRooms: number; standardRooms: number; specialRooms: number; availableRooms: number; occupiedRooms: number; maintenanceRooms: number; pendingBookings: number; approvedBookings: number; currentGuests: number; todayArrivals: number; todayDepartures: number; extraBedRequests: number; conventionHallPending: number; diningHallPending: number }
 export interface BookingCounts { total: number; pending: number; approved: number; completed: number }

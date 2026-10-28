@@ -23,7 +23,7 @@ describe('Accommodation request', () => {
   })
   it('requires an extra bed for three guests and sends a pending request payload', async () => {
     vi.mocked(api.post).mockResolvedValue({ data: { id: 'booking-123' } })
-    render(<MemoryRouter><Routes><Route path="/" element={<NewBookingPage />} /><Route path="/app/bookings/:id" element={<h1>Request received</h1>} /></Routes></MemoryRouter>)
+    render(<MemoryRouter initialEntries={['/?roomId=room-101']}><Routes><Route path="/" element={<NewBookingPage />} /><Route path="/app/bookings/:id" element={<h1>Request received</h1>} /></Routes></MemoryRouter>)
     const user = userEvent.setup()
     await user.selectOptions(screen.getByLabelText(/Number of guests/), '3')
     expect(screen.getByRole('checkbox')).toBeChecked()
@@ -31,7 +31,7 @@ describe('Accommodation request', () => {
     await user.type(screen.getByLabelText(/Purpose of visit/), 'Official workshop')
     await user.click(screen.getByRole('button', { name: /Submit booking request/ }))
     await screen.findByRole('heading', { name: 'Request received' })
-    expect(api.post).toHaveBeenCalledWith('/bookings', expect.objectContaining({ guests: 3, extraBedRequested: true, preferredCategory: 'STANDARD' }))
+    expect(api.post).toHaveBeenCalledWith('/bookings', expect.objectContaining({ guests: 3, extraBedRequested: true, preferredCategory: 'STANDARD', roomId: 'room-101' }))
   })
   it('does not request unsupported extra beds for special accommodation', async () => {
     vi.mocked(api.post).mockResolvedValue({ data: { id: 'special-123' } })

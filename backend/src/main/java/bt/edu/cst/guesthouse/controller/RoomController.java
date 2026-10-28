@@ -9,8 +9,8 @@ public class RoomController {
     private final BookingService service;
     public RoomController(BookingService service) { this.service=service; }
     @GetMapping public List<RoomView> rooms() { return service.rooms(); }
-    @GetMapping("/available") public List<RoomView> available(@RequestParam LocalDate checkIn,@RequestParam LocalDate checkOut,@RequestParam int guests) {
-        return service.available(checkIn,checkOut,guests);
+    @GetMapping("/available") public List<RoomView> available(@RequestParam LocalDate checkIn,@RequestParam LocalDate checkOut,@RequestParam int guests,@RequestParam(defaultValue="STANDARD") Category category) {
+        return service.available(checkIn,checkOut,guests,category);
     }
     @GetMapping("/{id}") public RoomView room(@PathVariable UUID id) { return service.room(id); }
 }

@@ -10,7 +10,7 @@ public final class BookingDtos {
         @Size(max=160) String organization,@Size(max=120) String designation,
         @NotNull GuestCategory guestCategory,@NotBlank @Size(max=1000) String purpose,
         @Min(1) @Max(3) int guests,@NotNull LocalDate checkIn,@NotNull LocalDate checkOut,
-        @NotNull Category preferredCategory,boolean extraBedRequested,@Size(max=1000) String remark) {}
+        @NotNull Category preferredCategory,boolean extraBedRequested,@Size(max=1000) String remark,UUID roomId) {}
     public enum Category { STANDARD,SPECIAL }
     public enum GuestCategory { GENERAL_GUEST,COLLEGE_STAFF_GUEST,OFFICIAL_GUEST,VIP_GUEST,MINISTER,VICE_CHANCELLOR,SENIOR_OFFICIAL,OTHER_DISTINGUISHED_GUEST }
     public record Approve(@NotNull UUID roomId,boolean approveExtraBed,@Size(max=1000) String remark) {}

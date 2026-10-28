@@ -44,10 +44,13 @@ public class BookingService {
     public List<RoomView> rooms() { return rooms.findAllByOrderByRoomNumberAsc().stream().map(r -> RoomView.from(r,0)).toList(); }
     public RoomView room(UUID id) { return RoomView.from(rooms.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)),0); }
     public List<RoomView> available(LocalDate arrival,LocalDate departure,int guests) {
+        return available(arrival,departure,guests,Category.STANDARD);
+    }
+    public List<RoomView> available(LocalDate arrival,LocalDate departure,int guests,Category category) {
         BookingRules.dates(arrival,departure,LocalDate.now(ZONE));
         if (guests<1 || guests>3) throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"One standard-room request supports 1–3 guests; submit separate requests for larger parties");
         return rooms.findAllByOrderByRoomNumberAsc().stream()
-            .filter(r -> "STANDARD".equals(r.category) && "ACTIVE".equals(r.serviceStatus))
+            .filter(r -> category.name().equals(r.category) && "ACTIVE".equals(r.serviceStatus))
             .filter(r -> r.maxCapacity!=null && guests<=r.maxCapacity && (guests<=r.normalCapacity || r.supportsExtraBed))
             .filter(r -> bookings.overlaps(r.id,arrival,departure,NONE)==0).map(r -> RoomView.from(r,guests)).toList();
     }
@@ -64,7 +67,23 @@ public class BookingService {
         b.checkIn=request.checkIn(); b.checkOut=request.checkOut(); b.preferredCategory=request.preferredCategory().name();
         b.extraBedRequested=request.extraBedRequested(); b.extraBedDecision=b.extraBedRequested?"PENDING":"NOT_REQUESTED";
         b.status="PENDING"; b.userRemark=request.remark(); b.createdAt=Instant.now(); b.updatedAt=b.createdAt;
-        bookings.saveAndFlush(b); event(b,null,"PENDING",actor,"Request submitted"); return Summary.from(b);
+        Room held=hold(b,request.roomId());
+        bookings.saveAndFlush(b); event(b,null,"PENDING",actor,"Request submitted; room "+held.roomNumber+" held pending review"); return Summary.from(b);
+    }
+    private Room hold(Booking booking,UUID requested) {
+        // All creators acquire this small inventory in one order, including automatic allocation.
+        var inventory=rooms.lockInventory();
+        if (requested!=null && inventory.stream().noneMatch(r -> r.id.equals(requested)))
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Room not found");
+        for (Room room:inventory) {
+            if (requested!=null && !room.id.equals(requested)) continue;
+            if (!room.category.equals(booking.preferredCategory) || !"ACTIVE".equals(room.serviceStatus)) continue;
+            if (room.normalCapacity==null || room.maxCapacity==null || booking.guests>room.maxCapacity) continue;
+            if (booking.guests>room.normalCapacity && (!room.supportsExtraBed || !booking.extraBedRequested)) continue;
+            if (bookings.overlaps(room.id,booking.checkIn,booking.checkOut,booking.id)>0) continue;
+            booking.assignedRoomId=room.id; return room;
+        }
+        throw conflict(requested==null?"No suitable rooms are available for these dates; special-room capacity must be verified":"This room is no longer available or suitable for these dates. Choose another room");
     }
     public Detail detail(UUID id,UUID actor,boolean admin) {
         Booking b=get(id,actor,admin,false);
@@ -92,6 +111,7 @@ public class BookingService {
     }
     private Room allocate(Booking b,UUID roomId,boolean approveBed) {
         Room r=rooms.lockById(roomId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Room not found"));
+        if (!r.category.equals(b.preferredCategory)) throw conflict("Room category does not match the booking request");
         if (!"ACTIVE".equals(r.serviceStatus)) throw conflict("Room is not in service");
         if (approveBed && (!b.extraBedRequested || !r.supportsExtraBed || !"STANDARD".equals(r.category)))
             throw conflict("Extra bed was not requested or is unsupported");
@@ -202,6 +222,7 @@ public class BookingService {
         BookingRules.dates(b.checkIn,b.checkOut,LocalDate.now(ZONE));
         b.assignedRoomId=null; b.extraBedAdded=false;
         b.extraBedDecision=b.extraBedRequested?"PENDING":"NOT_REQUESTED";
+        hold(b,null);
         return save(b,actor,"PENDING",remark);
     }
 }

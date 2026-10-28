@@ -16,7 +16,7 @@ Public registration is configurable. Initial development supports registration w
 
 - One room per booking in the initial release. Guest count must be 1–3 for a standard-room request. Larger parties receive a clear instruction to submit separate room requests; no silent capacity overflow.
 - Stays use property-local dates, Asia/Thimphu. Check-in cannot be in the past and check-out must be later. Intervals are half-open: [arrival, departure), allowing departure and arrival on the same date.
-- PENDING requests do not reserve inventory. APPROVED and CHECKED_IN allocations block overlapping dates. Approval and reassignment recheck availability within a transaction.
+- Updated 28 October 2026: PENDING requests immediately hold a concrete room. PENDING, APPROVED and CHECKED_IN allocations block overlapping dates. Submission, approval and reassignment recheck availability transactionally; see pending-holds-and-live-data.md.
 - PostgreSQL exclusion constraints on active room allocations provide a final concurrency safeguard. Approval locks/updates the allocation transactionally; conflicts return HTTP 409.
 - Three guests require an extra-bed request and approval before a standard booking can be approved. Rejecting that bed cannot leave an approved three-person booking in a two-person room.
 - Store extra-bed requested, decision (PENDING/APPROVED/REJECTED/NOT_REQUESTED), count (0–1), and actual setup. Check-in for three guests requires the approved bed to be recorded as added.
@@ -25,7 +25,7 @@ Public registration is configurable. Initial development supports registration w
 - Approve and assign room are atomic for initial approval. Reassignment of an approved booking is also atomic and audited.
 - Lifecycle: PENDING → APPROVED or REJECTED or CANCELLED; APPROVED → CHECKED_IN; CHECKED_IN → CHECKED_OUT → COMPLETED. Checkout records both final events in one transaction and releases inventory. CHECKED_OUT remains an audit event rather than a manually maintained waiting state.
 - USER cancellation is limited to PENDING. ADMIN cancellation of an APPROVED future booking releases its allocation and records a reason. No cancellation of a checked-in stay.
-- Reopen only REJECTED/CANCELLED records with future valid dates, returning them to PENDING without an active allocation. Completed stays remain immutable; a new stay requires a new booking.
+- Reopen only REJECTED/CANCELLED records with future valid dates, returning them to PENDING only after acquiring a suitable room hold. Completed stays remain immutable; a new stay requires a new booking.
 - State changes record actor, time, previous/new state, and remarks. Repeated or invalid transitions return 409.
 
 ### Facility rules

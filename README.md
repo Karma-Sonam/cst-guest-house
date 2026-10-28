@@ -42,6 +42,8 @@ Stage 11 improves explicit form labels and help text, confirmation dialog names,
 
 Stage 12 adds private local PostgreSQL backups and isolated restore verification. Archive creation, restore, checksum rejection, temporary-database cleanup and working-site health checks passed. See [local backup instructions](docs/local-backups.md).
 
-Stage 13 refreshes the Docker images and validates the latest management features through the three-container stack. The Postman collection now has 55 reference requests. Local-only operation is retained; no GitHub push or public deployment has occurred.
+Stage 13 refreshes the Docker images and validates the latest management features through the three-container stack. The Postman collection now has 55 reference requests. Local-only operation is retained; permanent public deployment remains deferred.
 
 Stage 14 prepares the [college acceptance review](docs/college-acceptance.md), with property-confirmation fields, 15 review scenarios and a decision record. The read-only local readiness script passed website, access, inventory and standard-room rule checks; college approval remains pending.
+
+Pending-room policy update (28 October 2026): submitted requests immediately hold a concrete room and block overlapping pending/approved/checked-in requests. Operational data refreshes automatically every three seconds and after writes. Public inventory/contact values come from the backend, and per-room stand-in photos have been removed. Verified with 25 backend and 16 frontend tests plus a live browser/API hold/release check. See [pending holds and live data](docs/pending-holds-and-live-data.md). The latest source is included on the develop branch.
