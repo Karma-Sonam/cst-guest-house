@@ -1,0 +1,6 @@
+target
+.git
+.env*
+*.log
+*.ps1
+HELP.md
