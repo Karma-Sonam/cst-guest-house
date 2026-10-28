@@ -1,0 +1,55 @@
+name: guesthouse-production
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-guesthouse}
+      POSTGRES_USER: ${POSTGRES_USER:-guesthouse}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    volumes:
+      - production_database:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+    restart: unless-stopped
+    networks: [private]
+  backend:
+    build: ./backend
+    image: cst-guesthouse-backend:local
+    environment:
+      DATABASE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-guesthouse}
+      POSTGRES_USER: ${POSTGRES_USER:-guesthouse}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-3600}
+      FRONTEND_URL: ${PRODUCTION_ORIGIN:-http://127.0.0.1:8088}
+      REGISTRATION_ENABLED: ${PRODUCTION_REGISTRATION_ENABLED:-false}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      DINING_BREAKFAST_START: ${DINING_BREAKFAST_START:-07:00}
+      DINING_BREAKFAST_END: ${DINING_BREAKFAST_END:-09:00}
+      DINING_LUNCH_START: ${DINING_LUNCH_START:-12:00}
+      DINING_LUNCH_END: ${DINING_LUNCH_END:-14:00}
+      DINING_DINNER_START: ${DINING_DINNER_START:-18:00}
+      DINING_DINNER_END: ${DINING_DINNER_END:-20:00}
+    depends_on:
+      postgres: { condition: service_healthy }
+    restart: unless-stopped
+    networks: [private]
+  frontend:
+    build: ./frontend
+    image: cst-guesthouse-frontend:local
+    ports:
+      - "${WEB_BIND_ADDRESS:-127.0.0.1}:${WEB_PORT:-8088}:8080"
+    depends_on:
+      backend: { condition: service_healthy }
+    restart: unless-stopped
+    networks: [private, web]
+volumes:
+  production_database:
+networks:
+  private:
+    internal: true
+  web:

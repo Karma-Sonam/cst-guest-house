@@ -1,0 +1,76 @@
+name: Deploy verified main revision
+on:
+  workflow_dispatch:
+    inputs:
+      revision:
+        description: Full main-branch commit SHA with a successful CI push run
+        required: true
+        type: string
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: production-deployment
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Require verified main-branch source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REVISION: ${{ inputs.revision }}
+        run: |
+          set -euo pipefail
+          [[ "$REVISION" =~ ^[0-9a-f]{40}$ ]] || { echo "Use a full lowercase commit SHA"; exit 1; }
+          git merge-base --is-ancestor "$REVISION" origin/main
+          run_id=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?head_sha=$REVISION&status=success" --jq '[.workflow_runs[] | select(.event == "push" and .head_branch == "main" and .conclusion == "success")] | first | .id // empty')
+          test -n "$run_id" || { echo "A successful main-branch CI push run is required"; exit 1; }
+          echo "Verified CI run $run_id"
+      - name: Deploy on the configured Linux host
+        env:
+          REVISION: ${{ inputs.revision }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+          DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
+        run: |
+          set -euo pipefail
+          : "${DEPLOY_HOST:?Configure DEPLOY_HOST}"
+          : "${DEPLOY_USER:?Configure DEPLOY_USER}"
+          : "${DEPLOY_SSH_KEY:?Configure DEPLOY_SSH_KEY}"
+          : "${DEPLOY_KNOWN_HOSTS:?Configure pinned DEPLOY_KNOWN_HOSTS}"
+          : "${DEPLOY_PATH:?Configure DEPLOY_PATH}"
+          [[ "$DEPLOY_HOST" =~ ^[A-Za-z0-9.-]+$ ]]
+          [[ "$DEPLOY_USER" =~ ^[a-z_][a-z0-9_-]*$ ]]
+          [[ "$DEPLOY_PATH" =~ ^/[A-Za-z0-9_./-]+$ ]]
+          umask 077
+          key_file="$RUNNER_TEMP/guesthouse-deploy-key"
+          hosts_file="$RUNNER_TEMP/guesthouse-known-hosts"
+          trap 'rm -f "$key_file" "$hosts_file"' EXIT
+          printf '%s\n' "$DEPLOY_SSH_KEY" | tr -d '\r' > "$key_file"
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > "$hosts_file"
+          ssh -i "$key_file" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$hosts_file" "$DEPLOY_USER@$DEPLOY_HOST" bash -s -- "$DEPLOY_PATH" "$GITHUB_REPOSITORY" "$REVISION" <<'REMOTE'
+          set -euo pipefail
+          deploy_path=$1
+          repository=$2
+          revision=$3
+          cd "$deploy_path"
+          test -f .env.production
+          test "$(git remote get-url origin)" = "https://github.com/$repository.git"
+          git diff --quiet
+          git diff --cached --quiet
+          git fetch origin "$revision"
+          git checkout --detach "$revision"
+          docker compose --env-file .env.production -f compose.production.yaml up -d --build --wait --wait-timeout 180
+          web_port=$(sed -n 's/^WEB_PORT=//p' .env.production | tail -1)
+          web_port=${web_port:-8088}
+          [[ "$web_port" =~ ^[0-9]+$ ]]
+          curl --fail --silent --show-error "http://127.0.0.1:$web_port/api/public/config"
+          REMOTE
