@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM eclipse-temurin:21-jdk AS build
+FROM eclipse-temurin:24-jdk AS build
 WORKDIR /workspace
 COPY .mvn .mvn
 COPY mvnw pom.xml ./
@@ -10,7 +10,7 @@ COPY docker docker
 RUN ./mvnw -B -ntp -DskipTests package
 RUN javac -d /healthcheck docker/HealthCheck.java
 
-FROM eclipse-temurin:21-jre AS runtime
+FROM eclipse-temurin:24-jre AS runtime
 WORKDIR /app
 RUN groupadd --system guesthouse && useradd --system --gid guesthouse --home-dir /app guesthouse
 COPY --from=build --chown=guesthouse:guesthouse /workspace/target/guesthouse-0.0.1-SNAPSHOT.jar /app/app.jar
